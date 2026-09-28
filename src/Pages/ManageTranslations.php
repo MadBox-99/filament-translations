@@ -14,6 +14,7 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas;
 use Filament\Schemas\Schema;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\File;
 use Madbox99\FilamentTranslations\FilamentTranslationsPlugin;
 use UnitEnum;
@@ -42,7 +43,7 @@ class ManageTranslations extends Page implements HasForms
     }
 
     #[\Override]
-    public function getTitle(): string
+    public function getTitle(): string|Htmlable
     {
         return __('filament-translations::translations.title');
     }

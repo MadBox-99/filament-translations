@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 use Madbox99\FilamentTranslations\Pages\ManageTranslations;
+use Madbox99\FilamentTranslations\Tests\Fixtures\CustomManageTranslations;
 
 use function Pest\Livewire\livewire;
 
@@ -67,4 +68,8 @@ it('has the same keys in every package language file', function (): void {
 
     expect($flatten(require __DIR__.'/../../resources/lang/hu/translations.php'))
         ->toBe($flatten(require __DIR__.'/../../resources/lang/en/translations.php'));
+});
+
+it('can be subclassed with filament page signatures', function (): void {
+    expect((new CustomManageTranslations)->getTitle())->toBe('Custom');
 });
