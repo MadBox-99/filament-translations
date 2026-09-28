@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Madbox99\FilamentTranslations\Pages;
 
 use BackedEnum;
@@ -24,10 +26,6 @@ class ManageTranslations extends Page implements HasForms
 
     protected static string|UnitEnum|null $navigationGroup = 'Settings';
 
-    protected static ?string $navigationLabel = 'Translations';
-
-    protected static ?string $title = 'Manage Translations';
-
     protected static ?int $navigationSort = 10;
 
     protected string $view = 'filament-translations::pages.manage-translations';
@@ -36,6 +34,18 @@ class ManageTranslations extends Page implements HasForms
 
     /** @var array<string, mixed> */
     public ?array $data = [];
+
+    #[\Override]
+    public static function getNavigationLabel(): string
+    {
+        return __('filament-translations::translations.navigation_label');
+    }
+
+    #[\Override]
+    public function getTitle(): string
+    {
+        return __('filament-translations::translations.title');
+    }
 
     #[\Override]
     public static function getNavigationGroup(): string|UnitEnum|null
@@ -88,19 +98,22 @@ class ManageTranslations extends Page implements HasForms
     {
         return $form
             ->schema([
-                Schemas\Components\Section::make('Language File')
+                Schemas\Components\Section::make(__('filament-translations::translations.section'))
                     ->schema([
                         Forms\Components\Select::make('locale')
-                            ->label('Language')
+                            ->label(__('filament-translations::translations.fields.locale'))
                             ->options(fn (): array => collect($this->getAvailableLocales())
                                 ->mapWithKeys(fn (string $locale): array => [$locale => strtoupper($locale)])
                                 ->toArray())
                             ->live()
-                            ->afterStateUpdated(fn () => $this->loadTranslations()),
+                            ->afterStateUpdated(function (?string $state): void {
+                                $this->locale = $state ?? $this->locale;
+                                $this->loadTranslations();
+                            }),
                         Forms\Components\KeyValue::make('translations')
-                            ->label('Translations')
-                            ->keyLabel('Key')
-                            ->valueLabel('Translation')
+                            ->label(__('filament-translations::translations.fields.translations'))
+                            ->keyLabel(__('filament-translations::translations.fields.key'))
+                            ->valueLabel(__('filament-translations::translations.fields.value'))
                             ->reorderable()
                             ->columnSpanFull(),
                     ]),
@@ -117,9 +130,9 @@ class ManageTranslations extends Page implements HasForms
         $path = $this->getLangPath("{$locale}.json");
 
         File::ensureDirectoryExists(dirname($path));
-        File::put($path, json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        File::put($path, json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n");
 
-        Notification::make()->title('Translations saved.')->success()->send();
+        Notification::make()->title(__('filament-translations::translations.notifications.saved'))->success()->send();
     }
 
     public function addLocale(): void
@@ -130,12 +143,12 @@ class ManageTranslations extends Page implements HasForms
     public function addLocaleAction(): Action
     {
         return Action::make('addLocale')
-            ->label('Add Language')
+            ->label(__('filament-translations::translations.actions.add_locale'))
             ->icon('heroicon-o-plus')
             ->schema([
                 Forms\Components\TextInput::make('new_locale')
-                    ->label('Locale Code')
-                    ->placeholder('e.g. en, de, fr')
+                    ->label(__('filament-translations::translations.fields.new_locale'))
+                    ->placeholder(__('filament-translations::translations.fields.new_locale_placeholder'))
                     ->required()
                     ->maxLength(5)
                     ->alphaDash(),
@@ -145,25 +158,25 @@ class ManageTranslations extends Page implements HasForms
                 $path = $this->getLangPath("{$locale}.json");
 
                 if (File::exists($path)) {
-                    Notification::make()->title('Language already exists.')->warning()->send();
+                    Notification::make()->title(__('filament-translations::translations.notifications.locale_exists'))->warning()->send();
 
                     return;
                 }
 
                 File::ensureDirectoryExists(dirname($path));
-                File::put($path, json_encode([], JSON_PRETTY_PRINT));
+                File::put($path, "{}\n");
 
                 $this->locale = $locale;
                 $this->loadTranslations();
 
-                Notification::make()->title("Language '{$locale}' added.'")->success()->send();
+                Notification::make()->title(__('filament-translations::translations.notifications.locale_added', ['locale' => $locale]))->success()->send();
             });
     }
 
     protected function getFormActions(): array
     {
         return [
-            Action::make('save')->label('Save')->submit('save'),
+            Action::make('save')->label(__('filament-translations::translations.actions.save'))->submit('save'),
         ];
     }
 

@@ -27,11 +27,18 @@
     "require-dev": {
         "laravel/pint": "^1.0",
         "orchestra/testbench": "^10.0 || ^11.0",
+        "pestphp/pest": "^4.0",
+        "pestphp/pest-plugin-livewire": "^4.0",
         "rector/rector": "^2.0"
     },
     "autoload": {
         "psr-4": {
             "Madbox99\\FilamentTranslations\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Madbox99\\FilamentTranslations\\Tests\\": "tests/"
         }
     },
     "extra": {
@@ -43,11 +50,15 @@
     },
     "scripts": {
         "lint": "pint",
-        "refactor": "rector"
+        "refactor": "rector",
+        "test": "vendor/bin/pest"
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     }
 }

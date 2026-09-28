@@ -15,6 +15,7 @@ class FilamentTranslationsServiceProvider extends PackageServiceProvider
     {
         $package->name(static::$name)
             ->hasConfigFile()
+            ->hasTranslations()
             ->hasViews();
     }
 }

@@ -7,7 +7,7 @@
                 {{ $this->addLocaleAction }}
             </div>
             <x-filament::button type="submit">
-                Save
+                {{ __('filament-translations::translations.actions.save') }}
             </x-filament::button>
         </div>
     </form>
