@@ -190,8 +190,10 @@ class ManageTranslations extends Page implements HasForms
             $translations = json_decode(File::get($path), true) ?? [];
         }
 
-        $this->data['locale'] = $this->locale;
-        $this->data['translations'] = $translations;
+        $this->form->fill([
+            'locale' => $this->locale,
+            'translations' => $translations,
+        ]);
     }
 
     /** @return array<string> */

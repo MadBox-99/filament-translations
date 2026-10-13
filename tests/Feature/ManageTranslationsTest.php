@@ -12,14 +12,25 @@ use function Pest\Livewire\livewire;
 it('loads the first available locale', function (): void {
     livewire(ManageTranslations::class)
         ->assertSet('locale', 'en')
-        ->assertSet('data.translations', ['Hello' => 'Hello']);
+        ->assertSet('data.translations', [['key' => 'Hello', 'value' => 'Hello']]);
 });
 
 it('loads the selected locale when the language is switched', function (): void {
     livewire(ManageTranslations::class)
         ->fillForm(['locale' => 'hu'])
         ->assertSet('locale', 'hu')
-        ->assertSet('data.translations', ['Hello' => 'Szia', 'Path' => 'a/b']);
+        ->assertSet('data.translations', [
+            ['key' => 'Hello', 'value' => 'Szia'],
+            ['key' => 'Path', 'value' => 'a/b'],
+        ]);
+});
+
+it('keeps the file contents when saving without changes', function (): void {
+    livewire(ManageTranslations::class)
+        ->fillForm(['locale' => 'hu'])
+        ->call('save');
+
+    expect(json_decode(File::get($this->langPath.'/hu.json'), true))->toBe(['Hello' => 'Szia', 'Path' => 'a/b']);
 });
 
 it('saves into the selected locale file without escaping slashes', function (): void {
