@@ -206,7 +206,7 @@ class ManageTranslations extends Page implements HasForms
         }
 
         return collect(File::files($langPath))
-            ->filter(fn ($file) => $file->getExtension() === 'json')
+            ->filter(fn ($file): bool => $file->getExtension() === 'json')
             ->map(fn ($file) => $file->getFilenameWithoutExtension())
             ->sort()
             ->values()
